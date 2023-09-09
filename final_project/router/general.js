@@ -24,6 +24,7 @@ public_users.post("/register", (req,res) => {
   return res.status(404).json({message: "Username or password are not provided."});
 });
 
+//Task 10. Get the book list async available in the shop
 const getBooks = () => {
   return new Promise((resolve) =>{
     setTimeout(() => {
@@ -36,31 +37,68 @@ const getBooks = () => {
 public_users.get('/',function (req, res) {
   //Write your code here
   //List of books available in the shop;
-  /*const list = getBooks().then((result) => {
+  const list = getBooks().then((result) => {
     res.send(result);
-  });*/
-  res.send(JSON.stringify({books},null,4));
+  });
+  //res.send(books);
 });
+
+// Task 11. Get book details async based on ISBN
+const getBooksByIsbn = (isbn) => {
+  return new Promise((resolve) =>{
+    setTimeout(() => {
+      const result = Object.entries(books).filter(([key, value]) => key == isbn).map(([key, value]) => value);
+      resolve(result)
+    },2000)
+  });
+}
 
 // Task 2. Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
   console.log("isbn=>",isbn);
-  let booksFiltered = Object.entries(books).filter(([key, value]) => key == isbn).map(([key, value]) => value);
-  res.send(booksFiltered);
+  getBooksByIsbn(isbn).then(result =>{
+    res.send(result);
+  }).catch(error => {
+    return res.status(400).json({message: error});
+  });
   //return res.status(300).json({message: "Yet to be implemented"});
  });
-  
+
+
+// Task 12. Get book details based on author async
+const getBooksByAuthor = (author) => {
+  return new Promise((resolve) =>{
+    setTimeout(() => {
+      const result = Object.values(books).filter((book)=>book.author.toLowerCase().includes(author.toLowerCase()));
+      resolve(result)
+    },2000)
+  });
+}
+
 // Task 3. Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
   //return res.status(300).json({message: "Yet to be implemented"});
   const author = req.params.author;
   console.log("author=>",author);
-  let booksFiltered = Object.values(books).filter((book)=>book.author.toLowerCase().includes(author.toLowerCase()));
-  res.send(booksFiltered);
+  getBooksByAuthor(author).then(result =>{
+    res.send(result);
+  }).catch(error => {
+    return res.status(400).json({message: error});
+  });
 });
+
+// Task 13. Get all books based on title async
+const getBooksByTitle = (title) => {
+  return new Promise((resolve) =>{
+    setTimeout(() => {
+      const result = Object.values(books).filter((book)=>book.title.toLowerCase().includes(title.toLowerCase()));
+      resolve(result)
+    },2000)
+  });
+}
 
 // Task 4. Get all books based on title
 public_users.get('/title/:title',function (req, res) {
@@ -68,8 +106,11 @@ public_users.get('/title/:title',function (req, res) {
   //return res.status(300).json({message: "Yet to be implemented"});
   const title = req.params.title;
   console.log("title=>",title);
-  let booksFiltered = Object.values(books).filter((book)=>book.title.toLowerCase().includes(title.toLowerCase()));
-  res.send(booksFiltered);
+  getBooksByTitle(title).then(result =>{
+    res.send(result);
+  }).catch(error => {
+    return res.status(400).json({message: error});
+  });
 });
 
 //  Get book review
